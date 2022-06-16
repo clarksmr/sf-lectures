@@ -1,0 +1,61 @@
+/*   Styles for SF: V6: Separation Logic Foundations    */
+
+/*   Background   */
+body {  background-image: url('../media/image/slf-bg.jpg');   }
+
+#header { background-color: rgba(75, 95, 77, 0.53); }
+
+/*   This volume's color   */
+.section, ul#menu li.section_name, div.button, td.logical_tab, .ui-state-active {
+    background-color: #dbb27f;
+}
+
+/* EXPERIMENTAL change style of h2 sections */
+
+/*
+h2.section, h3.section {
+    color: #6e4d25;
+}
+*/
+h3.section {
+    color: #6e4d25;
+}
+
+h2.section {
+    color: #ffffff;
+    background-color: #dbb27f;
+    padding: 3px 8px 4px 8px;
+}
+
+/* BCP, May 2021 -- swap h1 and h2 colors */
+h1.section {
+    background-color: #C7883D;
+}
+
+
+/* Quoted pieces of OCaml code */
+
+.inlinecode-ocaml {
+    display: block;
+    font-family: monospace;
+    font-weight: bold;
+    background-color: rgba(230,204,173,.3);
+    padding: 3px;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    font-size: 100%;
+    border: 1px dotted gray; }
+
+.inlinecode-ocaml keyword {
+  color: #697f2f;
+}
+
+/* Make comments in proof less ugly by using green */
+
+.comment {
+    color: rgb(30%,50%,30%);
+}
+
+.gray-font {
+  color: #CCCCCC;
+}

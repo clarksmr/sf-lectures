@@ -1,0 +1,157 @@
+body {
+  overscroll-behavior-y: none;
+}
+
+@media (max-width: 1564px) {  /* 860 / 0.55 */
+
+  /* this is a hack that's needed because changing padding causes reflow */
+  /* and loses the current scroll position */
+  .terse#ide-wrapper #main {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+  .terse#ide-wrapper #page {
+    padding-left: 80px;
+    transition: padding 0.1s ease;
+    transition-delay: 0.5s;
+  }
+  .terse#ide-wrapper:not(.toggled) #page {
+    padding-left: 0;
+  }
+  #ide-wrapper #main {
+    transition: padding 0.1s ease;
+    transition-delay: 0.3s;
+  }
+  .full#ide-wrapper:not(.toggled) #main {
+    padding-right: 10px;
+    transition: padding 0.1s ease;
+  }
+  #ide-wrapper:not(.toggled) #page {
+    transition-delay: 0s;
+  }
+  .terse#ide-wrapper #panel-wrapper {
+    transition-delay: 0.1s;
+  }
+
+}
+
+#ide-wrapper.layout-flex #panel-wrapper {
+  max-width: 38em !important;  /* jsCoq's default is 48em */
+}
+
+.doc div.code {
+  display: block;
+  overflow-x: auto;
+}
+
+*:focus {
+  outline: none;
+}
+
+#jscoq-plug {
+  position: absolute;
+  height: 32px;
+  right: 0;
+  top: 40px;
+  width: 40px !important;
+  background: url(../../../../node_modules/wacoq/ui-images/jscoq-splash.png);  
+  background-size: cover;
+  cursor: pointer;
+  /*transition: visibility 0s linear 1s, width 0.2s ease; */
+  transition: width 0.2s ease;
+}
+
+#jscoq-plug:hover {
+  width: 60px !important;
+}
+
+body.goals-active #jscoq-plug {
+  width: 0 !important;
+}
+
+#panel-wrapper #hide-panel {
+  display: none;  /* sorry, this clashes with the SF page design */
+}
+
+#panel-wrapper button.close {
+  position: absolute;
+  padding: 0;
+  border: none;
+  top:       0;     left:        0;
+  width:     15px;  height:      15px;
+  font-size: 16px;  line-height: 10px;
+}
+
+#panel-wrapper button.close:hover {
+  background: #ccc;
+}
+
+#panel-wrapper #toolbar > *:first-child {
+  margin-left: 15px;  /* cannot use padding on `#toolbar` */
+}                     /* because an element with padding cannot have zero width */
+
+/*
+ * Larger fonts in presentation mode
+ */
+
+body.terse #panel-wrapper .flex-panel {
+  font-size: 125%;
+}
+body.terse #panel-wrapper .exits.right {
+  display: none;
+}
+
+body.terse .CodeMirror.jscoq {
+  font-size: 22px;
+  line-height: 34px;
+}
+
+body.terse #goal-panel div.contextual-info {
+  font-size: 100%; /* overrides jsCoq's style */
+}
+
+body.terse #query-panel .Error,
+body.terse #query-panel .Warning,
+body.terse #query-panel .Notice,
+body.terse #query-panel .Info,
+body.terse #query-panel .Debug {
+  background-size: 18px;
+  background-position-y: 3px;
+  padding-left: 22px;
+}
+
+#footer hr {
+  border-top: 1px solid black;
+  opacity: 0.2;
+}
+
+/*
+ * Proof script toggle stuff 
+ */
+
+div.togglescript {
+  font-size: 22px;
+  line-height: calc(60% + 6px);  /* per `.show` */
+  padding-left: 1em;
+}
+
+div.togglescript.hidden {
+  display: block;
+}
+div.togglescript.hidden > .show {
+  background: #888;
+  color: #ccc
+}
+div.togglescript.hidden > .show::before {
+    content: '-';
+}
+
+div.proofscript > .code-tight {
+  margin-top: .1em;
+}
+
+div.proofscript.hidden {
+  display: block; /* needed because CodeMirror does not like being initialized when hidden */
+  visibility: hidden;
+}
+

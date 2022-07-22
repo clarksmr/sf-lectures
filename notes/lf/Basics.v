@@ -266,38 +266,6 @@ Check Playground.b : rgb.
 Check b : bool.
 
 (* ================================================================= *)
-(** ** Tuples *)
-
-Module TuplePlayground.
-
-(** A nybble is half a byte -- that is, four bits. *)
-
-Inductive bit : Type :=
-  | B0
-  | B1.
-
-Inductive nybble : Type :=
-  | bits (b0 b1 b2 b3 : bit).
-
-Check (bits B1 B0 B1 B0)
-  : nybble.
-
-(** We deconstruct a nybble by pattern-matching. *)
-
-Definition all_zero (nb : nybble) : bool :=
-  match nb with
-  | (bits B0 B0 B0 B0) => true
-  | (bits _ _ _ _) => false
-  end.
-
-Compute (all_zero (bits B1 B0 B1 B0)).
-(* ===> false : bool *)
-Compute (all_zero (bits B0 B0 B0 B0)).
-(* ===> true : bool *)
-
-End TuplePlayground.
-
-(* ================================================================= *)
 (** ** Numbers *)
 
 Module NatPlayground.
@@ -677,15 +645,4 @@ Proof.
 Qed.
 
 
-(* ################################################################# *)
-(** * Testing Your Solutions *)
-
-(** Run [make BasicsTest.vo] to check your solution for common errors:
-
-    - Deleting or renaming exercises.
-
-    - Changing what you were supposed to prove.
-
-    - Leaving the exercise unfinished.
-*)
 

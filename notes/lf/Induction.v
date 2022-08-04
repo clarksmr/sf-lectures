@@ -1,69 +1,35 @@
 (** * Induction: Proof by Induction *)
 
-(* ################################################################# *)
-(** * Review *)
-(* QUIZ
+(** Previous proof techniques:
 
-    To prove the following theorem, which tactics will we need besides
-    [intros] and [reflexivity]?  (1) none, (2) [rewrite], (3)
-    [destruct], (4) both [rewrite] and [destruct], or (5) can't be
-    done with the tactics we've seen.
+    - reflexivity of equality [reflexivity]
+    - substitution of equals for equals [rewrite]
+    - case analysis [destruct]
 
-    Theorem review1: (orb true false) = true.
-*)
-(* QUIZ
-
-    What about the next one?
-
-    Theorem review2: forall b, (orb true b) = true.
-
-    Which tactics do we need besides [intros] and [reflexivity]?  (1)
-    none (2) [rewrite], (3) [destruct], (4) both [rewrite] and
-    [destruct], or (5) can't be done with the tactics we've seen.
-*)
-(* QUIZ
-
-    What if we change the order of the arguments of [orb]?
-
-    Theorem review3: forall b, (orb b true) = true.
-
-    Which tactics do we need besides [intros] and [reflexivity]?  (1)
-    none (2) [rewrite], (3) [destruct], (4) both [rewrite] and
-    [destruct], or (5) can't be done with the tactics we've seen.
-*)
-(* QUIZ
-
-    What about this one?
-
-    Theorem review4 : forall n : nat, n = 0 + n.
-
-    (1) none, (2) [rewrite], (3) [destruct], (4) both [rewrite] and
-    [destruct], or (5) can't be done with the tactics we've seen.
-*)
-(* QUIZ
-
-    What about this?
-
-    Theorem review5 : forall n : nat, n = n + 0.
-
-    (1) none, (2) [rewrite], (3) [destruct], (4) both [rewrite] and
-    [destruct], or (5) can't be done with the tactics we've seen.
-*)
+    Next: _induction_ on data types. *)
 
 (* ################################################################# *)
 (** * Separate Compilation *)
 
 (** Coq will first need to compile [Basics.v] into [Basics.vo]
     so it can be imported here -- detailed instructions are in the
-    full version of this chapter... *)
+    full version of this chapter. To create a Makefile, run
+    [coq_makefile -f _CoqProject -o Makefile *.v]. *)
 
 From LF Require Export Basics.
 
 (* ################################################################# *)
 (** * Proof by Induction *)
 
-(** We can prove that [0] is a neutral element for [+] on the _left_
-    using just [reflexivity].  But the proof that it is also a neutral
+(** We can prove that [0] is a neutral
+    element for [+] on the _left_
+    using just [reflexivity]. *)
+
+Example add_0_l : forall n : nat,
+    0 + n = n.
+Proof. reflexivity. Qed.
+
+(** But the proof that it is also a neutral
     element on the _right_ ... *)
 
 Theorem add_0_r_firsttry : forall n:nat,
@@ -97,7 +63,9 @@ Abort.
         reason like this:
 
          - show that [P(O)] holds
+
          - show that, if [P(n')] holds, then so does [P(S n')]
+
          - conclude that [P(n)] holds for all [n].
 
     For example... *)
@@ -111,49 +79,16 @@ Proof.
 (** Let's try this one together: *)
 
 Theorem minus_n_n : forall n,
-  minus n n = 0.
+  n - n = 0.
 Proof.
   (* WORK IN CLASS *) Admitted.
 
 (** Here's another related fact about addition, which we'll
-    need later.  (The proof is left as an exercise.) *)
+    need later. *)
 
 Theorem add_comm : forall n m : nat,
   n + m = m + n.
-Proof.
-  (* FILL IN HERE *) Admitted.
-
-(** **** Exercise: 2 stars, standard (eqb_refl)
-
-    The following theorem relates the computational equality [=?] on
-    [nat] with the definitional equality [=] on [bool]. *)
-Theorem eqb_refl : forall n : nat,
-  (n =? n) = true.
-Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
-
-(** **** Exercise: 2 stars, standard, optional (even_S)
-
-    Here's a useful theorem that proves [n-1] is not even if
-    [n] is even.  This will facilitate proofs by induction on [n]: *)
-
-Theorem even_S : forall n : nat,
-  even (S n) = negb (even n).
-Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
-
-(** **** Exercise: 1 star, standard, optional (destruct_induction)
-
-    Briefly explain the difference between the tactics [destruct]
-    and [induction].
-
-(* FILL IN HERE *)
-*)
-
-(** [] *)
-
+    (* FILL IN HERE *) Admitted.
 (* ################################################################# *)
 (** * Proofs Within Proofs *)
 
@@ -167,7 +102,7 @@ Theorem mult_0_plus' : forall n m : nat,
 Proof.
   intros n m.
   assert (H: n + 0 + 0 = n).
-    { rewrite add_comm. simpl. rewrite add_comm. reflexivity. }
+  { rewrite add_comm. simpl. rewrite add_comm. reflexivity. }
   rewrite -> H.
   reflexivity.  Qed.
 
@@ -250,6 +185,17 @@ Proof.
 (** * More Exercises *)
 (* These additional exercises will be used in later chapters.  We
    don't need to work them in class. *)
+
+Theorem even_S : forall n : nat,
+  even (S n) = negb (even n).
+Proof.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
+
+Theorem eqb_refl : forall n : nat,
+  (n =? n) = true.
+Proof.   (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (** **** Exercise: 3 stars, standard, especially useful (mul_comm)
 
@@ -339,4 +285,3 @@ Theorem mult_assoc : forall n m p : nat,
 Proof.
   (* FILL IN HERE *) Admitted.
 (** [] *)
-

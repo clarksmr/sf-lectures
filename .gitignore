@@ -5,3 +5,8 @@
 *.aux
 *.coq.d
 *.lia.cache
+
+.DS_Store
+*~
+~\$*
+\#*\#

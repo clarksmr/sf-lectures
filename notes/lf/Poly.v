@@ -180,6 +180,7 @@ Definition mynil : list nat := nil.
 Check @nil : forall X : Type, list X.
 
 Definition mynil' := @nil nat.
+Definition mynil'' := @nil. Check mynil''.
 
 (** Using argument synthesis and implicit arguments, we can
     define concrete notations that work for lists of any type. *)
@@ -244,6 +245,9 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
   | _, [] => []
   | x :: tx, y :: ty => (x, y) :: (combine tx ty)
   end.
+
+Example combine_ex : combine [1;2] [3;4] = [(1,3); (2,4)].
+Proof. reflexivity. Qed.
 
 (* ================================================================= *)
 (** ** Polymorphic Options *)

@@ -6,6 +6,8 @@
 *.coq.d
 *.lia.cache
 
+.Makefile.d
+
 .DS_Store
 *~
 ~\$*

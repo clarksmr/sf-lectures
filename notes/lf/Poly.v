@@ -10,16 +10,20 @@ From LF Require Export Lists.
 (** Instead of defining new lists for each type, like
     this... *)
 
+Inductive natlist : Type :=
+| nat_nil
+| nat_cons (n : nat) (lst : natlist).
+
 Inductive boollist : Type :=
-  | bool_nil
-  | bool_cons (b : bool) (l : boollist).
+| bool_nil
+| bool_cons (b : bool) (l : boollist).
 
 (** ...Coq lets us give a _polymorphic_ definition that allows
     list elements of any type: *)
 
-Inductive list (X:Type) : Type :=
-  | nil
-  | cons (x : X) (l : list X).
+Inductive list (X : Type) : Type :=
+| nil
+| cons (x : X) (l : list X).
 
 (** [list] itself is a _function_ from types to types. *)
 
@@ -32,9 +36,9 @@ Check (nil nat) : list nat.
 
 Check (cons nat 3 (nil nat)) : list nat.
 
-Check nil : forall X : Type, list X.
+Check nil : forall (X : Type), list X.
 
-Check cons : forall X : Type, X -> list X -> list X.
+Check cons : forall (X : Type), X -> list X -> list X.
 
 (** Side note: In .v files, the "forall" quantifier is spelled
     out in letters.  In the corresponding HTML files, it is usually
@@ -60,61 +64,6 @@ Example test_repeat2 :
   repeat bool false 1 = cons bool false (nil bool).
 Proof. reflexivity. Qed.
 
-(* QUIZ
-
-    Recall the types of [cons] and [nil]:
-
-       nil : forall X : Type, list X
-       cons : forall X : Type, X -> list X -> list X
-
-    What is the type of [cons bool true (cons nat 3 (nil nat))]?
-
-    (1) [nat -> list nat -> list nat]
-
-    (2) [forall (X:Type), X -> list X -> list X]
-
-    (3) [list nat]
-
-    (4) [list bool]
-
-    (5) Ill-typed
-*)
-(* QUIZ
-
-    Recall the definition of [repeat]:
-
-    Fixpoint repeat (X : Type) (x : X) (count : nat)
-                  : list X :=
-      match count with
-      | 0 => nil X
-      | S count' => cons X x (repeat X x count')
-      end.
-
-    What is the type of [repeat]?
-
-    (1) [nat -> nat -> list nat]
-
-    (2) [X -> nat -> list X]
-
-    (3) [forall (X Y: Type), X -> nat -> list Y]
-
-    (4) [forall (X:Type), X -> nat -> list X]
-
-    (5) Ill-typed
-*)
-(* QUIZ
-
-    What is the type of [repeat nat 1 2]?
-
-    (1) [list nat]
-
-    (2) [forall (X:Type), X -> nat -> list X]
-
-    (3) [list bool]
-
-    (4) Ill-typed
-*)
-
 (* ----------------------------------------------------------------- *)
 (** *** Type Annotation Inference *)
 
@@ -124,7 +73,7 @@ Proof. reflexivity. Qed.
 
 Fixpoint repeat' X x count : list X :=
   match count with
-  | 0        => nil X
+  | 0 => nil X
   | S count' => cons X x (repeat' X x count')
   end.
 
@@ -146,7 +95,7 @@ Check repeat
 
 Fixpoint repeat'' X x count : list X :=
   match count with
-  | 0        => nil _
+  | 0 => nil _
   | S count' => cons _ x (repeat'' _ x count')
   end.
 
@@ -177,7 +126,7 @@ Definition list123'' := cons 1 (cons 2 (cons 3 nil)).
 
 Fixpoint repeat''' {X : Type} (x : X) (count : nat) : list X :=
   match count with
-  | 0        => nil
+  | 0 => nil
   | S count' => cons x (repeat''' x count')
   end.
 
@@ -186,13 +135,13 @@ Fixpoint repeat''' {X : Type} (x : X) (count : nat) : list X :=
 
 Fixpoint app {X : Type} (l1 l2 : list X) : list X :=
   match l1 with
-  | nil      => l2
+  | nil => l2
   | cons h t => cons h (app t l2)
   end.
 
 Fixpoint rev {X:Type} (l:list X) : list X :=
   match l with
-  | nil      => nil
+  | nil => nil
   | cons h t => app (rev t) (cons h nil)
   end.
 
@@ -244,182 +193,13 @@ Notation "x ++ y" := (app x y)
 
 Definition list123''' := [1; 2; 3].
 
-(* QUIZ
-
-    Which type does Coq assign to the following expression?
-
-    (The square brackets here and in the following quizzes are list
-    brackets, not "this is a Coq expression inside a comment" brackets.)
-
-       [1;2;3]
-
-    (1) [list nat]
-
-    (2) [list bool]
-
-    (3) [bool]
-
-    (4) No type can be assigned
-*)
-(* QUIZ
-
-    What about this one?
-
-       [3 + 4] ++ nil
-
-    (1) [list nat]
-
-    (2) [list bool]
-
-    (3) [bool]
-
-    (4) No type can be assigned
-*)
-
-(* QUIZ
-
-    What about this one?
-
-       andb true false ++ nil
-
-    (1) [list nat]
-
-    (2) [list bool]
-
-    (3) [bool]
-
-    (4) No type can be assigned
-*)
-
-(* QUIZ
-
-    What about this one?
-
-        [1; nil]
-
-    (1) [list nat]
-
-    (2) [list (list nat)]
-
-    (3) [list bool]
-
-    (4) No type can be assigned
-*)
-
-(* QUIZ
-
-    What about this one?
-
-        [[1]; nil]
-
-    (1) [list nat]
-
-    (2) [list (list nat)]
-
-    (3) [list bool]
-
-    (4) No type can be assigned
-*)
-
-(* QUIZ
-
-    And what about this one?
-
-         [1] :: [nil]
-
-    (1) [list nat]
-
-    (2) [list (list nat)]
-
-    (3) [list bool]
-
-    (4) No type can be assigned
-*)
-
-(* QUIZ
-
-    This one?
-
-        @nil bool
-
-    (1) [list nat]
-
-    (2) [list (list nat)]
-
-    (3) [list bool]
-
-    (4) No type can be assigned
-*)
-
-(* QUIZ
-
-    This one?
-
-        nil bool
-
-    (1) [list nat]
-
-    (2) [list (list nat)]
-
-    (3) [list bool]
-
-    (4) No type can be assigned
-*)
-
-(* QUIZ
-
-    This one?
-
-        @nil 3
-
-    (1) [list nat]
-
-    (2) [list (list nat)]
-
-    (3) [list bool]
-
-    (4) No type can be assigned
-*)
-
-(* ----------------------------------------------------------------- *)
-(** *** Exercises *)
-
-(** **** Exercise: 2 stars, standard (poly_exercises)
-
-    Here are a few simple exercises, just like ones in the [Lists]
-    chapter, for practice with polymorphism.  Complete the proofs
-    below. *)
-
-Theorem app_nil_r : forall (X:Type), forall l:list X,
-  l ++ [] = l.
+Theorem app_assoc : forall X (lst1 lst2 lst3 : list X),
+  lst1 ++ lst2 ++ lst3 = (lst1 ++ lst2) ++ lst3.
 Proof.
-  (* FILL IN HERE *) Admitted.
-
-Theorem app_assoc : forall A (l m n:list A),
-  l ++ m ++ n = (l ++ m) ++ n.
-Proof.
-  (* FILL IN HERE *) Admitted.
-
-Lemma app_length : forall (X:Type) (l1 l2 : list X),
-  length (l1 ++ l2) = length l1 + length l2.
-Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
-
-(** **** Exercise: 2 stars, standard (more_poly_exercises)
-
-    Here are some slightly more interesting ones... *)
-
-Theorem rev_app_distr: forall X (l1 l2 : list X),
-  rev (l1 ++ l2) = rev l2 ++ rev l1.
-Proof.
-  (* FILL IN HERE *) Admitted.
-
-Theorem rev_involutive : forall X : Type, forall l : list X,
-  rev (rev l) = l.
-Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros X lst1 lst2 lst3. induction lst1 as [| h1 t1].
+  - simpl. reflexivity.
+  - simpl. rewrite IHt1. reflexivity.
+Qed.
 
 (* ================================================================= *)
 (** ** Polymorphic Pairs *)
@@ -443,7 +223,8 @@ Notation "X * Y" := (prod X Y) : type_scope.
     expressions.  This avoids a clash with the multiplication
     symbol.) *)
 
-(** Be careful not to get [(X,Y)] and [X*Y] confused! *)
+(** Be careful not to get [(X, Y)] and [X *Y ] confused! *)
+
 Definition fst {X Y : Type} (p : X * Y) : X :=
   match p with
   | (x, y) => x
@@ -457,7 +238,7 @@ Definition snd {X Y : Type} (p : X * Y) : Y :=
 (** What does this function do? *)
 
 Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
-           : list (X*Y) :=
+           : list (X * Y) :=
   match lx, ly with
   | [], _ => []
   | _, [] => []
@@ -469,9 +250,9 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
 
 Module OptionPlayground.
 
-Inductive option (X:Type) : Type :=
-  | Some (x : X)
-  | None.
+Inductive option (X : Type) : Type :=
+| Some (x : X)
+| None.
 
 Arguments Some {X}.
 Arguments None {X}.
@@ -481,7 +262,7 @@ End OptionPlayground.
 Fixpoint nth_error {X : Type} (l : list X) (n : nat)
                    : option X :=
   match l with
-  | nil => None
+  | [] => None
   | a :: l' => match n with
                | O => Some a
                | S n' => nth_error l' n'
@@ -503,7 +284,7 @@ Proof. reflexivity. Qed.
 
 (** Functions in Coq are _first class_. *)
 
-Definition doit3times {X : Type} (f : X->X) (n : X) : X :=
+Definition doit3times {X : Type} (f : X -> X) (n : X) : X :=
   f (f (f n)).
 
 Check @doit3times : forall X : Type, (X -> X) -> X -> X.
@@ -517,7 +298,7 @@ Proof. reflexivity. Qed.
 (* ================================================================= *)
 (** ** Filter *)
 
-Fixpoint filter {X:Type} (test: X->bool) (l:list X) : list X :=
+Fixpoint filter {X : Type} (test : X -> bool) (l : list X) : list X :=
   match l with
   | [] => []
   | h :: t =>
@@ -537,11 +318,7 @@ Example test_filter2:
   = [ [3]; [4]; [8] ].
 Proof. reflexivity. Qed.
 
-(** The [filter] function (especially when combined with some
-    other functions we'll see later) enables a powerful
-    _collection-oriented_ programming style. *)
-
-Definition countoddmembers' (l:list nat) : nat :=
+Definition countoddmembers' (l : list nat) : nat :=
   length (filter odd l).
 
 Example test_countoddmembers'1:   countoddmembers' [1;0;3;1;4;5] = 4.
@@ -573,9 +350,9 @@ Proof. reflexivity. Qed.
 (* ================================================================= *)
 (** ** Map *)
 
-Fixpoint map {X Y : Type} (f : X->Y) (l : list X) : list Y :=
-  match l with
-  | []     => []
+Fixpoint map {X Y : Type} (f : X -> Y) (lst : list X) : list Y :=
+  match lst with
+  | [] => []
   | h :: t => (f h) :: (map f t)
   end.
 
@@ -591,28 +368,6 @@ Example test_map3:
   = [[true;false];[false;true];[true;false];[false;true]].
 Proof. reflexivity. Qed.
 
-(* QUIZ
-
-    Recall the definition of [map]:
-
-      Fixpoint map {X Y : Type} (f : X->Y) (l : list X)
-                   : list Y :=
-        match l with
-        | []     => []
-        | h :: t => (f h) :: (map f t)
-        end.
-
-    What is the type of [map]?
-
-    (1) [forall X Y : Type, X -> Y -> list X -> list Y]
-
-    (2) [X -> Y -> list X -> list Y]
-
-    (3) [forall X Y : Type, (X -> Y) -> list X -> list Y]
-
-    (4) [forall X : Type, (X -> X) -> list X -> list X]
-*)
-
 (** Lists are not the only inductive type for which [map] makes sense.
     Here is a [map] for the [option] type: *)
 
@@ -626,10 +381,10 @@ Definition option_map {X Y : Type} (f : X -> Y) (xo : option X)
 (* ================================================================= *)
 (** ** Fold *)
 
-Fixpoint fold {X Y: Type} (f : X->Y->Y) (l : list X) (b : Y)
+Fixpoint fold {X Y: Type} (f : X -> Y -> Y) (lst : list X) (b : Y)
                          : Y :=
-  match l with
-  | nil => b
+  match lst with
+  | [] => b
   | h :: t => f h (fold f t b)
   end.
 
@@ -638,70 +393,19 @@ Fixpoint fold {X Y: Type} (f : X->Y->Y) (l : list X) (b : Y)
 Check (fold andb) : list bool -> bool -> bool.
 
 Example fold_example1 :
-  fold mult [1;2;3;4] 1 = 24.
+  fold mult [2;3;4] 1 = 24.
+(* 2 * (3 * (4 * 1)) *)
 Proof. reflexivity. Qed.
 
 Example fold_example2 :
   fold andb [true;true;false;true] true = false.
+(* T && (T && (F && (T && T))) *)
 Proof. reflexivity. Qed.
 
 Example fold_example3 :
-  fold app  [[1];[];[2;3];[4]] [] = [1;2;3;4].
+  fold app [[1];[];[2;3];[4]] [] = [1;2;3;4].
+(* [1] ++ ([] ++ ([2;3] ++ ([4] ++ []))) *)
 Proof. reflexivity. Qed.
-
-(* QUIZ
-
-    Here is the definition of [fold] again:
-
-     Fixpoint fold {X Y : Type}
-                   (f : X->Y->Y) (l : list X) (b : Y)
-                 : Y :=
-       match l with
-       | nil => b
-       | h :: t => f h (fold f t b)
-       end.
-
-    What is the type of [fold]?
-
-    (1) [forall X Y : Type, (X -> Y -> Y) -> list X -> Y -> Y]
-
-    (2) [X -> Y -> (X -> Y -> Y) -> list X -> Y -> Y]
-
-    (3) [forall X Y : Type, X -> Y -> Y -> list X -> Y -> Y]
-
-    (4) [X -> Y ->  X -> Y -> Y -> list X -> Y -> Y]
-
-*)
-
-(* QUIZ
-
-    What is the type of [fold plus]?
-
-    (1) [forall X Y : Type, list X -> Y -> Y]
-
-    (2) [nat -> nat -> list nat -> nat -> nat]
-
-    (3) [forall Y : Type, list nat -> Y -> nat]
-
-    (4) [list nat -> nat -> nat]
-
-    (5) [forall X Y : Type, list nat -> nat -> nat]
-
-*)
-
-(* QUIZ
-
-    What does [fold plus [1;2;3;4] 0] simplify to?
-
-   (1) [[1;2;3;4]]
-
-   (2) [0]
-
-   (3) [10]
-
-   (4) [[3;7;0]]
-
-*)
 
 (* ================================================================= *)
 (** ** Functions That Construct Functions *)
@@ -710,7 +414,7 @@ Proof. reflexivity. Qed.
     as results. *)
 
 Definition constfun {X: Type} (x: X) : nat -> X :=
-  fun (k:nat) => x.
+  fun (k : nat) => x.
 
 Definition ftrue := constfun true.
 
@@ -723,7 +427,7 @@ Proof. reflexivity. Qed.
 (** A two-argument function in Coq is actually a function that
     returns a function! *)
 
-Check plus : nat -> nat -> nat.
+Check plus : nat -> (nat -> nat).
 
 Definition plus3 := plus 3.
 Check plus3 : nat -> nat.

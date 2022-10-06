@@ -19,12 +19,12 @@ Check (pair 3 5) : natprod.
 
 Definition fst (p : natprod) : nat :=
   match p with
-  | pair x y => x
+  | pair x _ => x
   end.
 
 Definition snd (p : natprod) : nat :=
   match p with
-  | pair x y => y
+  | pair _ y => y
   end.
 
 Compute (fst (pair 3 5)).
@@ -41,12 +41,12 @@ Compute (fst (3,5)).
 
 Definition fst' (p : natprod) : nat :=
   match p with
-  | (x,y) => x
+  | (x,_) => x
   end.
 
 Definition snd' (p : natprod) : nat :=
   match p with
-  | (x,y) => y
+  | (_,y) => y
   end.
 
 Definition swap_pair (p : natprod) : natprod :=
@@ -70,7 +70,7 @@ Proof. reflexivity. Qed.
 Theorem surjective_pairing_stuck : forall (p : natprod),
   p = (fst p, snd p).
 Proof.
-  simpl. (* Doesn't reduce anything! *)
+  intros p. simpl. (* Doesn't reduce anything! *)
 Abort.
 
 (** Solution: use [destruct]. *)
@@ -103,7 +103,7 @@ Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
 (** Now these all mean exactly the same thing: *)
 
 Definition mylist1 := 1 :: (2 :: (3 :: nil)).
-Definition mylist2 := 1 :: 2 :: 3 :: nil.
+Definition mylist2 := 1 :: 2 :: 3 :: [].
 Definition mylist3 := [1;2;3].
 
 (** Some useful list-manipulation functions... *)
@@ -113,18 +113,22 @@ Definition mylist3 := [1;2;3].
 
 Fixpoint repeat (n count : nat) : natlist :=
   match count with
-  | O => nil
+  | O => []
   | S count' => n :: (repeat n count')
   end.
+
+Compute repeat 42 3.
 
 (* ----------------------------------------------------------------- *)
 (** *** Length *)
 
-Fixpoint length (l:natlist) : nat :=
-  match l with
-  | nil => O
-  | h :: t => S (length t)
+Fixpoint length (lst : natlist) : nat :=
+  match lst with
+  | [] => 0
+  | _ :: t => S (length t)
   end.
+
+Compute length (repeat 42 3).
 
 (* ----------------------------------------------------------------- *)
 (** *** Append *)
@@ -134,6 +138,8 @@ Fixpoint app (l1 l2 : natlist) : natlist :=
   | [] => l2
   | h :: t => h :: (app t l2)
   end.
+
+Compute app [1;2;3] [4;5;6].
 
 Notation "x ++ y" := (app x y)
                      (right associativity, at level 60).
@@ -151,13 +157,13 @@ Proof. reflexivity. Qed.
 Definition hd (default : nat) (l : natlist) : nat :=
   match l with
   | [] => default
-  | h :: t => h
+  | h :: _ => h
   end.
 
 Definition tl (l : natlist) : natlist :=
   match l with
   | [] => []
-  | h :: t => t
+  | _ :: t => t
   end.
 
 Example test_hd1:             hd 0 [1;2;3] = 1.
@@ -182,7 +188,7 @@ Proof. reflexivity. Qed.
 Theorem tl_length_pred : forall (lst : natlist),
   pred (length lst) = length (tl lst).
 Proof.
-  intros lst. destruct lst as [| h t].
+  intros lst. destruct lst as [ | h t].
   - reflexivity.
   - reflexivity.
 Qed.
@@ -322,8 +328,11 @@ Module PartialMap.
 Export NatList.  (* make the definitions from NatList available here *)
 
 Inductive partial_map : Type :=
-  | Empty
-  | Binding (k : nat) (v : nat) (m : partial_map).
+| Empty
+| Binding (k : nat) (v : nat) (m : partial_map).
+
+(** [partial_map] is similar to [nat_list], but the non-empty constructor
+    carries an extra value. *)
 
 (** The [update] function records a binding for a key. If the key
     was already present, that shadows the old binding. *)
@@ -339,6 +348,12 @@ Fixpoint find (k : nat) (m : partial_map) : natoption :=
   | Binding k2 v m' =>
       if k =? k2 then Some v else find k m'
   end.
+
+Theorem find_update : forall (m : partial_map) (k v : nat),
+    find k (update k v m) = Some v.
+Proof.
+  intros m k v. simpl. rewrite eqb_refl. reflexivity.
+Qed.
 
 End PartialMap.
 
